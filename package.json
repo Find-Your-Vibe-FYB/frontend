@@ -60,7 +60,8 @@
     "@emotion/is-prop-valid": "latest",
     "framer-motion": "latest",
     "qrcode": "latest",
-    "canvas-confetti": "latest"
+    "canvas-confetti": "latest",
+    "react-day-picker": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",
