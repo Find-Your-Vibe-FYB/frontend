@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { submitAnswers } from "@/lib/actions"
 import { Card } from "@/components/ui/card"
 import { QuestionCard } from "@/components/question-card"
 import { ProgressIndicator } from "@/components/progress-indicator"
@@ -57,10 +58,10 @@ export default function QuestionnairePage({ params }: { params: { code: string }
   }, [toast])
 
   const handleAnswer = (value: string) => {
-    setAnswers(prev => ({
-      ...prev,
+    setAnswers({
+      ...answers,
       [mockQuestions[currentQuestionIndex].questionId]: value
-    }))
+    })
 
     if (currentQuestionIndex < mockQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1)

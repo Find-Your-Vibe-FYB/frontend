@@ -3,8 +3,9 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 
 interface QuestionOption {
   value: string
@@ -52,19 +53,37 @@ export function QuestionCard({ question, onAnswer, selectedAnswer, className }: 
           <h3 className="text-lg font-semibold mt-4">{question.text}</h3>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3">
+          <RadioGroupPrimitive.Root
+            value={selectedAnswer}
+            onValueChange={onAnswer}
+            className="space-y-3"
+          >
             {question.options.map((option) => (
-              <Button
-                key={option.value}
-                variant={selectedAnswer === option.value ? "default" : "outline"}
-                className="w-full justify-start text-left"
-                onClick={() => onAnswer(option.value)}
-              >
-                <span className="font-semibold mr-2">{option.value}.</span>
-                {option.label}
-              </Button>
+              <div key={option.value} className="relative">
+                <RadioGroupPrimitive.Item
+                  value={option.value}
+                  id={option.value}
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor={option.value}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-all",
+                    "hover:bg-muted/50",
+                    "peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                  )}
+                >
+                  <div className="h-4 w-4 rounded-full border border-primary flex items-center justify-center">
+                    <div className="h-2.5 w-2.5 rounded-full bg-primary scale-0 transition-transform peer-data-[state=checked]:scale-100" />
+                  </div>
+                  <span className="flex-grow">
+                    <span className="font-semibold">{option.value}.</span>{" "}
+                    {option.label}
+                  </span>
+                </Label>
+              </div>
             ))}
-          </div>
+          </RadioGroupPrimitive.Root>
         </CardContent>
       </Card>
     </motion.div>
