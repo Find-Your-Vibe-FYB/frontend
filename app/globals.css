@@ -38,6 +38,13 @@
     --mimi-pink: 322 100% 92%;
     --misty-rose: 322 100% 94%;
     --nyanza-light: 322 100% 98%;
+
+    /* Question Category Colors */
+    --personality: 271 64% 46%;  /* #7B2CBF */
+    --flirting: 351 100% 65%;    /* #FF4D6D */
+    --social: 195 94% 62%;       /* #4CC9F0 */
+    --decision: 153 40% 30%;     /* #2D6A4F */
+    --interest: 33 100% 49%;     /* #FB8500 */
   }
 }
 
@@ -219,5 +226,37 @@
   );
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
+}
+
+/* Category-specific animations */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-reveal {
+  animation: reveal 0.5s ease-out forwards;
+}
+
+/* Question transition animations */
+@keyframes slide-question {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-question {
+  animation: slide-question 0.3s ease-out forwards;
 }
 
