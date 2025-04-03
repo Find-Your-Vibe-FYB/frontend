@@ -22,10 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Find Your Vibe (FYB) - Matchmaking Events</title>
+        <title>Find Your Vibe (FYV) - Matchmaking Events</title>
         <meta
           name="description"
-          content="Find Your Vibe (FYB) - Create and join matchmaking events that connect people through shared interests and vibes."
+          content="Find Your Vibe (FYV) - Create and join matchmaking events that connect people through shared interests and vibes."
         />
       </head>
       <body className={`${poppins.variable} ${outfit.variable} font-poppins`}>{children}</body>

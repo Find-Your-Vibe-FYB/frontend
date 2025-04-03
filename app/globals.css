@@ -7,20 +7,13 @@
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
-    /* Colors from the uploaded palette - refined for consistency */
-    --pale-purple: 270 100% 92%;
-    --mimi-pink: 330 100% 91%;
-    --misty-rose: 5 100% 92%;
-    --nyanza-light: 90 100% 94%;
-    --nyanza: 105 100% 92%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 322.2 84% 48.9%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -37,9 +30,14 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    --pale-purple: 322 100% 96%;
+    --mimi-pink: 322 100% 92%;
+    --misty-rose: 322 100% 94%;
+    --nyanza-light: 322 100% 98%;
   }
 }
 
@@ -48,7 +46,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background text-foreground;
   }
 }
 

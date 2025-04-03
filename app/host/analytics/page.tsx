@@ -272,6 +272,7 @@ export default function AnalyticsPage() {
               </div>
             </TabsContent>
           </Tabs>
+          <Calendar className="border rounded-lg" />
         </motion.div>
       </main>
     </div>

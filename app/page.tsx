@@ -182,7 +182,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-4">How FYB Works</h2>
+              <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-4">How FYV Works</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Our platform makes it easy to create and join matchmaking events that bring people together through
                 shared interests and real-time activities.
@@ -258,7 +258,7 @@ export default function Home() {
             {[
               {
                 quote:
-                  "I met my partner at a FYB event last summer. The questionnaire really helped match us based on our shared interests!",
+                  "I met my partner at a FYV event last summer. The questionnaire really helped match us based on our shared interests!",
                 name: "Jamie & Alex",
                 role: "Met at Summer Mixer 2024",
                 delay: 0,

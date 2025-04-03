@@ -16,6 +16,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  swcMinify: false, // Disable SWC minification
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
