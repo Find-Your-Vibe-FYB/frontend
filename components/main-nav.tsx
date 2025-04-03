@@ -17,18 +17,11 @@ export function MainNav() {
 
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-8">
-        <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-          About
-        </Link>
-        <Link href="/features" className="text-muted-foreground hover:text-foreground transition-colors">
-          Features
-        </Link>
+       
         <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
           Pricing
         </Link>
-        <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-          Contact
-        </Link>
+       
       </nav>
 
       <div className="hidden md:flex items-center gap-4">
