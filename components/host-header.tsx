@@ -29,7 +29,7 @@ export function HostHeader() {
         <div className="flex items-center gap-2">
           <Link href="/host/dashboard" className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Dating Game</span>
+            <span className="text-xl font-bold">Find Your Vibe</span>
           </Link>
         </div>
 

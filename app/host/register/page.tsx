@@ -107,7 +107,7 @@ export default function HostRegister() {
               <Heart className="w-6 h-6 text-primary" />
               <CardTitle className="text-2xl">Register as Host</CardTitle>
             </div>
-            <CardDescription>Create an account to host dating game events</CardDescription>
+            <CardDescription>Create an account to host Find Your Vibe events</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

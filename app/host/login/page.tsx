@@ -73,7 +73,7 @@ export default function HostLogin() {
               <Heart className="w-6 h-6 text-primary" />
               <CardTitle className="text-2xl">Login as Host</CardTitle>
             </div>
-            <CardDescription>Sign in to manage your dating game events</CardDescription>
+            <CardDescription>Sign in to manage your Find Your Vibe events</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

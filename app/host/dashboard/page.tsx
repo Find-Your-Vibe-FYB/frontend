@@ -98,7 +98,7 @@ export default function HostDashboard() {
         >
           <div>
             <h1 className="text-3xl font-bold">Your Events</h1>
-            <p className="text-muted-foreground">Manage and monitor your dating game events</p>
+            <p className="text-muted-foreground">Manage and monitor your Find Your Vibe events</p>
           </div>
 
           <Link href="/host/create-event">
