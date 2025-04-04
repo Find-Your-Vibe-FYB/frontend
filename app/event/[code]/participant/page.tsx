@@ -37,6 +37,9 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
+import { Event, Outfit } from "@/types/api"
+import { api } from "@/lib/api-client"
+import { toast } from "@/hooks/use-toast"
 
 // Mock event data
 const mockEvent = {
@@ -94,14 +97,20 @@ const mockOutfits = [
 
 export default function ParticipantPage({ params }: { params: { code: string } }) {
   const router = useRouter()
-  const [event, setEvent] = useState(mockEvent)
-  const [outfits, setOutfits] = useState(mockOutfits)
-  const [countdown, setCountdown] = useState(event.countdownDuration)
+  const [event, setEvent] = useState<Event | null>(null)
+  const [outfits, setOutfits] = useState<Outfit[]>([])
+  const [loading, setLoading] = useState(true)
+  const [countdown, setCountdown] = useState(event?.countdownDuration || 0)
   const [isCountdownActive, setIsCountdownActive] = useState(true)
   const [matchRevealed, setMatchRevealed] = useState(false)
   const [match, setMatch] = useState<{ id: string; nickname: string } | null>(null)
   const [showInterestSent, setShowInterestSent] = useState(false)
-  const [outfitFormData, setOutfitFormData] = useState({
+  const [outfitFormData, setOutfitFormData] = useState<{
+    description: string;
+    category: "casual" | "formal" | "party" | "costume" | "other";
+    style: "modern" | "vintage" | "classic" | "edgy" | "creative";
+    tags: string[];
+  }>({
     description: "",
     category: "casual",
     style: "modern",
@@ -109,6 +118,29 @@ export default function ParticipantPage({ params }: { params: { code: string } }
   })
   const [newComment, setNewComment] = useState("")
   const [isSubmittingOutfit, setIsSubmittingOutfit] = useState(false)
+
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const [eventData, outfitsData] = await Promise.all([
+          api.getEvent(params.code),
+          api.getTrendingOutfits(params.code)
+        ])
+        setEvent(eventData)
+        setOutfits(outfitsData)
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error loading event",
+          description: "Failed to load event data. Please try again."
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEventData()
+  }, [params.code, toast])
 
   // Format countdown time
   const formatTime = (seconds: number) => {
@@ -127,12 +159,12 @@ export default function ParticipantPage({ params }: { params: { code: string } }
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
       // Add new outfit to the list
-      const newOutfit = {
-        id: `o${outfits.length + 1}`,
+      const newOutfit: Outfit = {
+        outfitId: `o${outfits.length + 1}`,
         participantId: "self",
-        participantNickname: "You",
+        nickname: "You",
         description: outfitFormData.description,
-        imageUrl: "/placeholder.svg?height=300&width=300",
+        imagePath: "/placeholder.svg?height=300&width=300",
         category: outfitFormData.category,
         style: outfitFormData.style,
         tags: outfitFormData.tags,
@@ -164,23 +196,22 @@ export default function ParticipantPage({ params }: { params: { code: string } }
     if (!newComment.trim()) return
 
     setOutfits(
-      outfits.map((outfit) =>
-        outfit.id === outfitId
-          ? {
-              ...outfit,
-              comments: [
-                ...outfit.comments,
-                {
-                  id: `c${Math.random().toString(36).substr(2, 9)}`,
-                  participantId: "self",
-                  participantNickname: "You",
-                  text: newComment,
-                },
-              ],
-            }
-          : outfit,
-      ),
-    )
+          outfits.map((outfit) =>
+            outfit.id === outfitId
+              ? {
+                  ...outfit,
+                  comments: [
+                    ...outfit.comments,
+                    {
+                      participantId: "self",
+                      text: newComment,
+                      createdAt: new Date().toISOString(),
+                    },
+                  ],
+                }
+              : outfit,
+          ),
+        )
 
     setNewComment("")
   }
@@ -222,7 +253,7 @@ export default function ParticipantPage({ params }: { params: { code: string } }
 
           <div className="flex items-center gap-4">
             <div className="text-sm font-medium">
-              Event Code: <span className="font-bold">{event.eventCode}</span>
+              Event Code: <span className="font-bold">{event?.eventCode}</span>
             </div>
           </div>
         </div>
@@ -241,7 +272,7 @@ export default function ParticipantPage({ params }: { params: { code: string } }
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold">{event.eventName}</h1>
+            <h1 className="text-3xl font-bold">{event?.eventName}</h1>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -255,8 +286,8 @@ export default function ParticipantPage({ params }: { params: { code: string } }
                     <div className="flex items-start gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
                       <div>
-                        <div className="font-medium">{event.venue.name}</div>
-                        <div className="text-sm text-muted-foreground">{event.venue.address}</div>
+                        <div className="font-medium">{event?.venue.name}</div>
+                        <div className="text-sm text-muted-foreground">{event?.venue.address}</div>
                       </div>
                     </div>
                   </div>
@@ -265,7 +296,7 @@ export default function ParticipantPage({ params }: { params: { code: string } }
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {new Date(event.dateTime).toLocaleDateString("en-US", {
+                        {new Date(event?.dateTime).toLocaleDateString("en-US", {
                           month: "long",
                           day: "numeric",
                           year: "numeric",
@@ -275,7 +306,7 @@ export default function ParticipantPage({ params }: { params: { code: string } }
                     <div className="flex items-center gap-2 mt-1">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {new Date(event.dateTime).toLocaleTimeString("en-US", {
+                        {new Date(event?.dateTime).toLocaleTimeString("en-US", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
@@ -284,7 +315,7 @@ export default function ParticipantPage({ params }: { params: { code: string } }
                   </div>
                 </div>
 
-                {event.description && <div className="mt-4 text-sm">{event.description}</div>}
+                {event?.description && <div className="mt-4 text-sm">{event.description}</div>}
               </CardContent>
             </Card>
 

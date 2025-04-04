@@ -5,42 +5,65 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { Heart } from "lucide-react"
-import { socket, connectSocket, disconnectSocket } from "@/lib/socket"
+import { socket, connectSocket, disconnectSocket, connectToEvent } from "@/lib/socket"
 import { useToast } from "@/components/ui/use-toast"
+import { Button } from "@/components/ui/button"
 
 export default function WaitingPage({ params }: { params: { code: string } }) {
   const router = useRouter()
   const { toast } = useToast()
-  const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
+  const [timeLeft, setTimeLeft] = useState<number | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     connectSocket()
 
-    socket.emit("joinEvent", { eventCode: params.code })
+    const handlers = {
+      onCountdownUpdate: (serverTimeLeft: number) => {
+        setTimeLeft(serverTimeLeft)
+      },
+      onMatchReady: (matchId: string) => {
+        router.push(`/event/${params.code}/match?id=${matchId}`)
+      },
+      onError: (error: any) => {
+        setError(error.message)
+        toast({
+          variant: "destructive",
+          title: "Connection error",
+          description: error.message || "Please refresh the page",
+        })
+      }
+    }
 
-    socket.on("matchReady", ({ matchId }) => {
-      router.push(`/event/${params.code}/match?id=${matchId}`)
-    })
-
-    socket.on("countdownUpdate", ({ timeLeft: serverTimeLeft }) => {
-      setTimeLeft(serverTimeLeft)
-    })
-
-    socket.on("error", (error) => {
-      toast({
-        variant: "destructive",
-        title: "Connection error",
-        description: "Please refresh the page",
-      })
-    })
+    connectToEvent(params.code, handlers)
 
     return () => {
-      socket.off("matchReady")
-      socket.off("countdownUpdate")
-      socket.off("error")
       disconnectSocket()
     }
   }, [params.code, router, toast])
+
+  if (error) {
+    return (
+      <div className="container max-w-md mx-auto py-12 px-4">
+        <Card className="text-center p-6">
+          <CardContent>
+            <p className="text-destructive">{error}</p>
+            <Button onClick={() => window.location.reload()} className="mt-4">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!timeLeft) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin">Connecting...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="container max-w-md mx-auto py-12 px-4">

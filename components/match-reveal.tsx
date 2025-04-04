@@ -16,6 +16,7 @@ import {
   Tooltip,
   Legend
 } from "chart.js"
+import type { CategoryScores } from "@/types/api"
 
 ChartJS.register(
   RadialLinearScale,
@@ -26,19 +27,10 @@ ChartJS.register(
   Legend
 )
 
-interface CompatibilityScores {
-  personality: number
-  flirting: number
-  social: number
-  decision: number
-  interests: number
-  overall: number
-}
-
 interface MatchRevealProps {
   matchName: string
   matchDescription?: string
-  compatibilityScores: CompatibilityScores
+  compatibilityScores: CategoryScores
   onViewProfile: () => void
   onExpressInterest: () => void
 }

@@ -28,3 +28,23 @@ export const connectSocket = () => {
 export const disconnectSocket = () => {
   socket.disconnect()
 }
+
+export const connectToEvent = (eventId: string, handlers: {
+  onCountdownUpdate?: (timeLeft: number) => void;
+  onMatchReady?: (matchId: string) => void;
+  onError?: (error: any) => void;
+}) => {
+  socket.emit('joinEvent', eventId);
+
+  if (handlers.onCountdownUpdate) {
+    socket.on('countdown', ({ timeLeft }) => handlers.onCountdownUpdate?.call(null, timeLeft));
+  }
+
+  if (handlers.onMatchReady) {
+    socket.on('matchReady', ({ matchId }) => handlers.onMatchReady?.call(null, matchId));
+  }
+
+  if (handlers.onError) {
+    socket.on('error', handlers.onError);
+  }
+};

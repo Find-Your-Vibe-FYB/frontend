@@ -1,5 +1,6 @@
 "use client"
 
+import type { Question } from "@/types/api"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { submitAnswers } from "@/lib/actions"
@@ -10,26 +11,13 @@ import { AnswerReview } from "@/components/answer-review"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { useToast } from "@/components/ui/use-toast"
 import { useLocalStorage } from "@/hooks/use-local-storage"
-
-// Mock questions - replace with API call
-const mockQuestions = [
-  {
-    questionId: "P1",
-    text: "How do you typically spend your free time?",
-    type: "choice" as const,
-    options: [
-      { value: "A", label: "Socializing with friends" },
-      { value: "B", label: "Pursuing hobbies alone" },
-      { value: "C", label: "Mix of both" },
-      { value: "D", label: "Trying new experiences" },
-    ],
-  },
-  // Add more questions...
-]
+import { api } from "@/lib/api-client"
 
 export default function QuestionnairePage({ params }: { params: { code: string } }) {
   const router = useRouter()
   const { toast } = useToast()
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [loading, setLoading] = useState(true)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useLocalStorage<Record<string, string>>(
     `questionnaire-${params.code}`,
@@ -37,6 +25,25 @@ export default function QuestionnairePage({ params }: { params: { code: string }
   )
   const [isReviewing, setIsReviewing] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
+
+  useEffect(() => {
+    const fetchEventQuestions = async () => {
+      try {
+        const response = await api.getEventQuestions(params.code)
+        setQuestions(response.questions)
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error loading questions",
+          description: error instanceof Error ? error.message : "Please try again"
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEventQuestions()
+  }, [params.code, toast])
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true)
@@ -60,10 +67,10 @@ export default function QuestionnairePage({ params }: { params: { code: string }
   const handleAnswer = (value: string) => {
     setAnswers({
       ...answers,
-      [mockQuestions[currentQuestionIndex].questionId]: value
+      [questions[currentQuestionIndex].questionId]: value
     })
 
-    if (currentQuestionIndex < mockQuestions.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1)
     } else {
       setIsReviewing(true)
@@ -71,7 +78,7 @@ export default function QuestionnairePage({ params }: { params: { code: string }
   }
 
   const handleEditAnswer = (questionId: string) => {
-    const index = mockQuestions.findIndex(q => q.questionId === questionId)
+    const index = questions.findIndex(q => q.questionId === questionId)
     setCurrentQuestionIndex(index)
     setIsReviewing(false)
   }
@@ -100,11 +107,19 @@ export default function QuestionnairePage({ params }: { params: { code: string }
     }
   }
 
-  const currentQuestion = mockQuestions[currentQuestionIndex]
+  const currentQuestion = questions[currentQuestionIndex]
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin">Loading...</div>
+      </div>
+    )
+  }
 
   if (isReviewing) {
     const formattedAnswers = Object.entries(answers).map(([questionId, value]) => {
-      const question = mockQuestions.find(q => q.questionId === questionId)!
+      const question = questions.find(q => q.questionId === questionId)!
       const answer = question.options.find(o => o.value === value)!
       return {
         questionId,
@@ -127,7 +142,7 @@ export default function QuestionnairePage({ params }: { params: { code: string }
     <div className="container max-w-2xl mx-auto py-8 px-4">
       <ProgressIndicator
         currentQuestion={currentQuestionIndex + 1}
-        totalQuestions={mockQuestions.length}
+        totalQuestions={questions.length}
         category={currentQuestion.questionId[0]}
         className="mb-8"
       />
