@@ -4,8 +4,8 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 
 interface QuestionOption {
   value: string
@@ -53,37 +53,46 @@ export function QuestionCard({ question, onAnswer, selectedAnswer, className }: 
           <h3 className="text-lg font-semibold mt-4">{question.text}</h3>
         </CardHeader>
         <CardContent>
-          <RadioGroupPrimitive.Root
+          <RadioGroup
             value={selectedAnswer}
             onValueChange={onAnswer}
-            className="space-y-3"
+            className="space-y-4"
           >
             {question.options.map((option) => (
-              <div key={option.value} className="relative">
-                <RadioGroupPrimitive.Item
-                  value={option.value}
-                  id={option.value}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={option.value}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-all",
-                    "hover:bg-muted/50",
-                    "peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                  )}
-                >
-                  <div className="h-4 w-4 rounded-full border border-primary flex items-center justify-center">
-                    <div className="h-2.5 w-2.5 rounded-full bg-primary scale-0 transition-transform peer-data-[state=checked]:scale-100" />
+              <motion.div
+                key={option.value}
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className="relative"
+              >
+                <div className={cn(
+                  "flex items-center space-x-3 rounded-lg border p-4 cursor-pointer transition-all duration-200",
+                  "hover:border-primary/50 hover:bg-accent hover:scale-[1.02]",
+                  selectedAnswer === option.value && "border-primary bg-primary/5 shadow-sm"
+                )}>
+                  <div className="relative flex items-center">
+                    <RadioGroupItem value={option.value} id={option.value} />
+                    {selectedAnswer === option.value && (
+                      <motion.div
+                        layoutId="highlight"
+                        className="absolute inset-0 rounded-full bg-primary/10"
+                        initial={false}
+                        transition={{ type: "spring", bounce: 0.2 }}
+                      />
+                    )}
                   </div>
-                  <span className="flex-grow">
-                    <span className="font-semibold">{option.value}.</span>{" "}
+                  <Label
+                    htmlFor={option.value}
+                    className="flex-1 cursor-pointer select-none"
+                  >
+                    <span className="font-semibold mr-2">{option.value}.</span>
                     {option.label}
-                  </span>
-                </Label>
-              </div>
+                  </Label>
+                </div>
+              </motion.div>
             ))}
-          </RadioGroupPrimitive.Root>
+          </RadioGroup>
         </CardContent>
       </Card>
     </motion.div>
